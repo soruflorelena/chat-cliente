@@ -1,6 +1,5 @@
 class wsCliente {
 	constructor(cliente, eventos = {}) {
-		// En producción la URL viene de la variable de entorno de Vite
 		const url = import.meta.env.VITE_WS_URL || 'ws://localhost:8080'
 		this.ws = new WebSocket(url)
 		this.eventos = eventos
