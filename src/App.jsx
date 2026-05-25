@@ -1,5 +1,5 @@
 import './App.css';
-import wsCliente from '../../wsClienteClass'
+import wsCliente from './wsClienteClass'
 import { useState, useEffect, useRef, useCallback } from "react";
 
 const COLORS = ["#378ADD", "#3B6D11", "#993556", "#854F0B", "#533AB7", "#0F6E56"];
