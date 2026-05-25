@@ -137,7 +137,7 @@ function Login({ onConectar, error }) {
   );
 }
 
-function ModalGrupo({ modo, grupoActual, connected, onGuardar, onCerrar }) {
+function ModalGrupo({ modo, grupoActual, usuarios, connected, onGuardar, onCerrar }) {
   const esEditar = modo === "editar";
   const integrantesIniciales = esEditar && grupoActual?.integrantes
     ? (typeof grupoActual.integrantes === "string" ? JSON.parse(grupoActual.integrantes) : grupoActual.integrantes)
@@ -164,22 +164,28 @@ function ModalGrupo({ modo, grupoActual, connected, onGuardar, onCerrar }) {
           placeholder="Ej. GRUPO1" maxLength={20}
           style={{ width: "100%", marginTop: 4, marginBottom: 14, padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 13, fontFamily: "inherit", color: "#1a1a2e", boxSizing: "border-box", background: esEditar ? "#f5f5f5" : "white" }}
         />
-        <label style={{ fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Integrantes conectados</label>
-        <div style={{ marginTop: 6, marginBottom: 14, display: "flex", flexDirection: "column", gap: 4 }}>
-          {connected.length === 0 && <p style={{ fontSize: 12, color: "#bbb", fontFamily: "'DM Mono', monospace" }}>No hay usuarios conectados</p>}
-          {connected.map(name => (
-            <div key={name} onClick={() => toggleIntegrante(name)} style={{
-              display: "flex", alignItems: "center", gap: 10, padding: "7px 10px", borderRadius: 8, cursor: "pointer",
-              background: seleccionados.includes(name) ? "#1a1a2e08" : "transparent",
-              border: seleccionados.includes(name) ? "1px solid #1a1a2e22" : "1px solid transparent",
-            }}>
-              <Avatar name={name} size={24} />
-              <span style={{ flex: 1, fontSize: 13 }}>{name}</span>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: seleccionados.includes(name) ? "#1a1a2e" : "white", border: "1.5px solid " + (seleccionados.includes(name) ? "#1a1a2e" : "#ccc"), display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {seleccionados.includes(name) && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.5,6.5 9,1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+        <label style={{ fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Integrantes</label>
+        <div style={{ marginTop: 6, marginBottom: 14, display: "flex", flexDirection: "column", gap: 4, maxHeight: 180, overflowY: "auto" }}>
+          {usuarios.length === 0 && <p style={{ fontSize: 12, color: "#bbb", fontFamily: "'DM Mono', monospace" }}>No hay usuarios registrados</p>}
+          {usuarios.map(name => {
+            const isOnline = connected.includes(name);
+            return (
+              <div key={name} onClick={() => toggleIntegrante(name)} style={{
+                display: "flex", alignItems: "center", gap: 10, padding: "7px 10px", borderRadius: 8, cursor: "pointer",
+                background: seleccionados.includes(name) ? "#1a1a2e08" : "transparent",
+                border: seleccionados.includes(name) ? "1px solid #1a1a2e22" : "1px solid transparent",
+              }}>
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <Avatar name={name} size={24} />
+                  <div style={{ position: "absolute", bottom: 0, right: 0, width: 7, height: 7, borderRadius: "50%", background: isOnline ? "#4ade80" : "#ccc", border: "1.5px solid white" }} />
+                </div>
+                <span style={{ flex: 1, fontSize: 13 }}>{name}</span>
+                <div style={{ width: 16, height: 16, borderRadius: 4, background: seleccionados.includes(name) ? "#1a1a2e" : "white", border: "1.5px solid " + (seleccionados.includes(name) ? "#1a1a2e" : "#ccc"), display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {seleccionados.includes(name) && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.5,6.5 9,1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {errorModal && <p style={{ fontSize: 12, color: "#c0392b", marginBottom: 10 }}>{errorModal}</p>}
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
@@ -498,7 +504,8 @@ export default function App() {
 
       {modalGrupo && (
         <ModalGrupo modo={modalGrupo.modo} grupoActual={modalGrupo.grupoActual}
-          connected={connected} onGuardar={guardarGrupo} onCerrar={() => setModalGrupo(null)} />
+          usuarios={usuariosConocidos.filter(n => n !== myName)} connected={connected}
+          onGuardar={guardarGrupo} onCerrar={() => setModalGrupo(null)} />
       )}
 
       {/* Header */}
