@@ -65,6 +65,11 @@ class wsCliente {
 		this.eventos.onGruposIniciales?.(data)
 	}
 
+	// El servidor manda todos los usuarios históricos
+	TODOS_USUARIOS(data) {
+		this.eventos.onTodosUsuarios?.(data)
+	}
+
 	// ─── Mensajes salientes ───────────────────────────────────────────────────
 
 	enviarChat(receptor, canal, mensaje) {

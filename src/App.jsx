@@ -1,5 +1,5 @@
 import './App.css';
-import wsCliente from './wsClienteClass'
+import wsCliente from '../../wsClienteClass'
 import { useState, useEffect, useRef, useCallback } from "react";
 
 const COLORS = ["#378ADD", "#3B6D11", "#993556", "#854F0B", "#533AB7", "#0F6E56"];
@@ -376,9 +376,18 @@ export default function App() {
         if (!data) return;
         setConnected(data);
         connectedRef.current = data;
-        // Registrar usuarios conocidos en el estado local para mostrarlos en la lista
+        // Los usuarios conectados también se agregan a conocidos
         data.forEach(n => {
           setUsuariosConocidos(prev => prev.includes(n) ? prev : [...prev, n]);
+        });
+      },
+
+      // El servidor manda todos los usuarios históricos al conectarse
+      onTodosUsuarios: (data) => {
+        if (!data?.length) return;
+        setUsuariosConocidos(prev => {
+          const nuevos = data.filter(n => n !== myNameRef.current && !prev.includes(n));
+          return nuevos.length ? [...prev, ...nuevos] : prev;
         });
       },
 
@@ -464,7 +473,7 @@ export default function App() {
     // Para "Todos" sí llega echo, así que NO lo agregamos aquí.
     if (recipient !== "Todos") {
       const hora = nowTime();
-      addMsg(recipient, { emisor: myName, texto, hora, leido: true });
+      addMsg(recipient, { emisor: myName, texto, hora, leido: false });
     }
 
     setInput("");
