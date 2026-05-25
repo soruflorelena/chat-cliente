@@ -263,13 +263,12 @@ export default function App() {
     setRecipient(chatId);
     recipientRef.current = chatId;
     setUnread(prev => ({ ...prev, [chatId]: 0 }));
-    if (chatId !== "Todos") {
-      markLeidoChat(chatId);
-      // Notificar leído al otro usuario (solo chats privados)
-      if (wsRef.current && chatId.includes("|"))
-        wsRef.current.enviarLeido(nombreReal, chatId);
-    }
-  }, [markLeidoChat]);
+    // Solo notificar al otro que leímos sus mensajes (chats privados).
+    // Las palomitas del EMISOR cambian a azul únicamente cuando llega onLeido,
+    // es decir cuando el DESTINATARIO abre el chat — no cuando lo abre el emisor.
+    if (chatId !== "Todos" && chatId.includes("|") && wsRef.current)
+      wsRef.current.enviarLeido(nombreReal, chatId);
+  }, []);
 
   // Gestión de grupos
   const guardarGrupo = (id, integrantesBase) => {
