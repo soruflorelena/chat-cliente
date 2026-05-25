@@ -152,7 +152,7 @@ function ModalGrupo({ modo, grupoActual, usuarios, connected, onGuardar, onCerra
   const guardar = () => {
     if (!nombre.trim()) return setErrorModal("El nombre del grupo es requerido");
     if (seleccionados.length === 0) return setErrorModal("Selecciona al menos un integrante");
-    onGuardar(nombre.trim().toUpperCase(), seleccionados);
+    onGuardar(nombre.trim(), seleccionados);
   };
 
   return (
@@ -601,8 +601,19 @@ export default function App() {
 
         {/* Área de chat */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <div style={{ padding: "8px 16px", borderBottom: "0.5px solid #eee", fontSize: 12, color: "#888", fontFamily: "'DM Mono', monospace" }}>
-            Para: <strong style={{ color: getColor(labelRecipient) }}>{labelRecipient}</strong>
+          <div style={{ padding: "8px 16px", borderBottom: "0.5px solid #eee", fontFamily: "'DM Mono', monospace" }}>
+            <div style={{ fontSize: 12, color: "#888" }}>
+              Para: <strong style={{ color: getColor(labelRecipient) }}>{labelRecipient}</strong>
+            </div>
+            {(() => {
+              const grupoActivo = gruposFiltrados.find(g => g.id === recipient);
+              if (!grupoActivo) return null;
+              const miembros = (typeof grupoActivo.integrantes === "string"
+                ? JSON.parse(grupoActivo.integrantes)
+                : grupoActivo.integrantes
+              ).join(", ");
+              return <div style={{ fontSize: 10, color: "#bbb", marginTop: 2 }}>{miembros}</div>;
+            })()}
           </div>
           <div style={{ flex: 1, overflowY: "auto", padding: "14px 16px", display: "flex", flexDirection: "column", gap: 6 }}>
             {currentMessages.length === 0 && (
